@@ -27,7 +27,7 @@ public class P2PFileSharing {
 
     static InetAddress bcastAddress;
     static DatagramSocket sock;
-    static int port = 9999;
+    static int port = 32008;
     
     public static void main(String args[]) throws Exception {
         String nick, frase;

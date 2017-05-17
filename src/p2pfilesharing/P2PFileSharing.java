@@ -11,7 +11,12 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,13 +33,13 @@ public class P2PFileSharing {
     static InetAddress bcastAddress;
     static DatagramSocket sock;
     static int port = 32008;
-    
+    static String nick, frase;
+    static byte[] data = new byte[300];
+    static byte[] fraseData;
+    static int i;
+    static DatagramPacket udpPacket;
+
     public static void main(String args[]) throws Exception {
-        String nick, frase;
-        byte[] data = new byte[300];
-        byte[] fraseData;
-        int i;
-        DatagramPacket udpPacket;
 
         try {
             sock = new DatagramSocket(port);
@@ -60,6 +65,19 @@ public class P2PFileSharing {
 
         Thread udpReceiver = new Thread(new UdpPeerReceive(sock));
         udpReceiver.start();
+        // Every 30s sends update from local files list
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("my announcement");
+                try {
+                    P2PFileSharing.sendAnnouncement();
+                } catch (InterruptedException | IOException ex) {
+                    Logger.getLogger(P2PFileSharing.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }, 0, 30000);
 
         while (true) {
             frase = in.readLine();
@@ -103,5 +121,25 @@ public class P2PFileSharing {
         }
         sock.close();
         udpReceiver.join();
+    }
+
+    public static void sendAnnouncement() throws InterruptedException, IOException {
+        FolderInfo.addFicheirosLocais();
+        ArrayList<FileInfo> ListaFicheiros = FolderInfo.getListaFicheiros();
+        frase = "";
+        for (FileInfo ficheiro : ListaFicheiros) {
+            frase += ficheiro.getEndereco_Servidor() + "|" + ficheiro.getNome_Ficheiro() + "\n"; //TODO: imprimir a lista de ficheiros 
+        }
+        fraseData = frase.getBytes();
+        udpPacket.setData(fraseData);
+        udpPacket.setLength(frase.length());
+        changeLock.acquire();
+        for (i = 0; i < MAXCLI; i++) {
+            if (peerActive[i]) {
+                udpPacket.setAddress(peerAddress[i]);
+                sock.send(udpPacket);
+            }
+        }
+        changeLock.release();
     }
 }

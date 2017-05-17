@@ -89,8 +89,11 @@ public class UdpPeerReceive implements Runnable {
                     }   P2PFileSharing.changeLock.release();
                     break;
                 default:
-                    frase = new String(p.getData(), 0, p.getLength()); //TODO: imprimir a lista de ficheiros 
-                    System.out.println(frase);
+                    frase = new String(p.getData(), 0, p.getLength()); 
+                    String [] files = frase.split("|");
+                    if(!currPeerAddress.equals(P2PFileSharing.peerAddress[0])){
+                        System.out.println(frase);
+                    }
                     break;
             }
         }

@@ -128,7 +128,7 @@ public class P2PFileSharing {
         ArrayList<FileInfo> ListaFicheiros = FolderInfo.getListaFicheiros();
         frase = "";
         for (FileInfo ficheiro : ListaFicheiros) {
-            frase += ficheiro.getEndereco_Servidor() + "|" + ficheiro.getNome_Ficheiro() + "\n"; //TODO: imprimir a lista de ficheiros 
+            frase += ficheiro.getEndereco_Servidor() + "," + ficheiro.getNome_Ficheiro() + "\n"; //TODO: imprimir a lista de ficheiros 
         }
         fraseData = frase.getBytes();
         udpPacket.setData(fraseData);

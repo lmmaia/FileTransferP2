@@ -21,6 +21,7 @@ import java.util.TimerTask;
 public class UdpPeerReceive implements Runnable {
 
     private static HashMap< String, ArrayList<FileInfo>> mapa_Servidor_Ficheiros = new HashMap<>();
+    static Timer t45 = new Timer();
     private DatagramSocket s;
 
     public UdpPeerReceive(DatagramSocket udp_s) {
@@ -35,8 +36,7 @@ public class UdpPeerReceive implements Runnable {
         InetAddress currPeerAddress;
 
         p = new DatagramPacket(data, data.length);
-        Timer t = new Timer();
-        t.schedule(new TimerTask() {
+        t45.schedule(new TimerTask() {
             @Override
             public void run() {
                 for (String key : mapa_Servidor_Ficheiros.keySet()) {
@@ -114,7 +114,6 @@ public class UdpPeerReceive implements Runnable {
                     if (i < P2PFileSharing.MAXCLI) {
                         P2PFileSharing.peerActive[i] = false;
                     }
-                    t.cancel();
                     P2PFileSharing.changeLock.release();
                     break;
                 default:

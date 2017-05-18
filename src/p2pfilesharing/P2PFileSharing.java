@@ -81,10 +81,10 @@ public class P2PFileSharing {
 
         while (true) {
             frase = in.readLine();
-            if (frase.compareTo("EXIT") == 0) {
+            if (frase.compareToIgnoreCase("EXIT") == 0) {
                 break;
             }
-            if (frase.compareTo("LIST") == 0) {
+            if (frase.compareToIgnoreCase("LIST") == 0) {
                 System.out.print("Active peers:");
                 changeLock.acquire();
                 for (i = 0; i < MAXCLI; i++) {
@@ -120,6 +120,7 @@ public class P2PFileSharing {
             }
         }
         t.cancel();
+        UdpPeerReceive.t45.cancel();
         sock.close();
         udpReceiver.join();
     }

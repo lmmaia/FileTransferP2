@@ -118,7 +118,7 @@ public class UdpPeerReceive implements Runnable {
                     String[] files = frase.split("\n");
                     for (String file : files) {
                         String[] fileInfo = file.split(",");
-                        if (!currPeerAddress.toString().equals("/" + fileInfo[0])) {
+                        if (!P2PFileSharing.peerAddress[0].getHostAddress().equals(fileInfo[0])) {
                             if (mapa_Servidor_Ficheiros.containsKey(fileInfo[0])) {
                                 FileInfo peerFile = new FileInfo(fileInfo[0], fileInfo[1], true);
                                 if (mapa_Servidor_Ficheiros.get(fileInfo[0]).contains(peerFile)) {

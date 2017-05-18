@@ -94,7 +94,7 @@ public class P2PFileSharing {
                 }
                 changeLock.release();
                 System.out.println("");
-            } else {
+            } /*else {
                 frase = "(" + nick + ") " + frase; //TODO: imprimir a lista de ficheiros 
                 fraseData = frase.getBytes();
                 udpPacket.setData(fraseData);
@@ -107,7 +107,7 @@ public class P2PFileSharing {
                     }
                 }
                 changeLock.release();
-            }
+            }*/
         }
 
         data[0] = 0;

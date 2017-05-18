@@ -41,10 +41,13 @@ public class UdpPeerReceive implements Runnable {
             public void run() {
                 for (String key : mapa_Servidor_Ficheiros.keySet()) {
                     for (FileInfo file : mapa_Servidor_Ficheiros.get(key)) {
-                        if (file.getUpdtime() > 45) {
+                        double lastupdate = (System.nanoTime() - file.getUpdtime()) / 1000000000.0;
+                        if (lastupdate > 45) {
                             mapa_Servidor_Ficheiros.get(key).remove(file);
+                            System.out.println("removed: "+file.getEndereco_Servidor() + " " + file.getNome_Ficheiro());
+                        } else {
+                            System.out.println(file.getEndereco_Servidor() + " " + file.getNome_Ficheiro() + " last update:" + lastupdate);
                         }
-                        System.out.println(file.getEndereco_Servidor() + " " + file.getNome_Ficheiro() + " " + file.getUpdtime());
                     }
                 }
             }
@@ -111,6 +114,7 @@ public class UdpPeerReceive implements Runnable {
                     if (i < P2PFileSharing.MAXCLI) {
                         P2PFileSharing.peerActive[i] = false;
                     }
+                    t.cancel();
                     P2PFileSharing.changeLock.release();
                     break;
                 default:
@@ -118,12 +122,12 @@ public class UdpPeerReceive implements Runnable {
                     String[] files = frase.split("\n");
                     for (String file : files) {
                         String[] fileInfo = file.split(",");
-                        if (!P2PFileSharing.peerAddress[0].getHostAddress().equals(fileInfo[0])) {
+                        if (P2PFileSharing.peerAddress[0].getHostAddress().equals(fileInfo[0])) {//!
                             if (mapa_Servidor_Ficheiros.containsKey(fileInfo[0])) {
                                 FileInfo peerFile = new FileInfo(fileInfo[0], fileInfo[1], true);
                                 if (mapa_Servidor_Ficheiros.get(fileInfo[0]).contains(peerFile)) {
                                     int idx = mapa_Servidor_Ficheiros.get(fileInfo[0]).indexOf(peerFile);
-                                    mapa_Servidor_Ficheiros.get(fileInfo[0]).get(idx).setUpdtime(0);
+                                    mapa_Servidor_Ficheiros.get(fileInfo[0]).get(idx).setUpdtime(System.nanoTime());
                                 } else {
                                     mapa_Servidor_Ficheiros.get(fileInfo[0]).add(peerFile);
                                 }

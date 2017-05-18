@@ -119,6 +119,7 @@ public class P2PFileSharing {
                 sock.send(udpPacket);
             }
         }
+        t.cancel();
         sock.close();
         udpReceiver.join();
     }

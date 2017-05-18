@@ -11,12 +11,15 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
  * @author Luís Maia
  */
 public class UdpPeerReceive implements Runnable {
+
     private static HashMap< String, ArrayList<FileInfo>> mapa_Servidor_Ficheiros = new HashMap<>();
     private DatagramSocket s;
 
@@ -32,7 +35,20 @@ public class UdpPeerReceive implements Runnable {
         InetAddress currPeerAddress;
 
         p = new DatagramPacket(data, data.length);
-
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for (String key : mapa_Servidor_Ficheiros.keySet()) {
+                    for (FileInfo file : mapa_Servidor_Ficheiros.get(key)) {
+                        if (file.getUpdtime() > 45) {
+                            mapa_Servidor_Ficheiros.get(key).remove(file);
+                        }
+                        System.out.println(file.getEndereco_Servidor() + " " + file.getNome_Ficheiro() + " " + file.getUpdtime());
+                    }
+                }
+            }
+        }, 45000, 45000);
         while (true) {
             p.setLength(data.length);
             try {
@@ -102,27 +118,23 @@ public class UdpPeerReceive implements Runnable {
                     String[] files = frase.split("\n");
                     for (String file : files) {
                         String[] fileInfo = file.split(",");
-                        if (!currPeerAddress.toString().equals("/"+fileInfo[0])) {
-                            if(mapa_Servidor_Ficheiros.containsKey(fileInfo[0])){
-                                FileInfo peerFile = new FileInfo(fileInfo[0], fileInfo[1], false);
-                                if(mapa_Servidor_Ficheiros.get(fileInfo[0]).contains(peerFile)){
-                                    //TODO: set file time to zero
-                                }else{
+                        if (currPeerAddress.toString().equals("/" + fileInfo[0])) {//!
+                            if (mapa_Servidor_Ficheiros.containsKey(fileInfo[0])) {
+                                FileInfo peerFile = new FileInfo(fileInfo[0], fileInfo[1], true);
+                                if (mapa_Servidor_Ficheiros.get(fileInfo[0]).contains(peerFile)) {
+                                    int idx = mapa_Servidor_Ficheiros.get(fileInfo[0]).indexOf(peerFile);
+                                    mapa_Servidor_Ficheiros.get(fileInfo[0]).get(idx).setUpdtime(0);
+                                } else {
                                     mapa_Servidor_Ficheiros.get(fileInfo[0]).add(peerFile);
                                 }
-                            }else{
+                            } else {
                                 ArrayList<FileInfo> peerFiles = new ArrayList<>();
-                                peerFiles.add(new FileInfo(fileInfo[0], fileInfo[1], false));
+                                peerFiles.add(new FileInfo(fileInfo[0], fileInfo[1], true));
                                 mapa_Servidor_Ficheiros.put(fileInfo[0], peerFiles);
                             }
-                        }else{
+                        } else {
                             System.out.println("my own list");
                         }
-                    }
-                    for (String key: mapa_Servidor_Ficheiros.keySet()) {
-                        for (FileInfo file : mapa_Servidor_Ficheiros.get(key)) {
-                            System.out.println(file.getEndereco_Servidor()+" "+ file.getNome_Ficheiro());
-                        }                
                     }
                     break;
             }

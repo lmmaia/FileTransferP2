@@ -5,30 +5,51 @@
  */
 package p2pfilesharing;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  *
  * @author Luís Maia
  */
 public class FileInfo implements Comparable<FileInfo> {
-
+    
     private String endereco_Servidor;
-
+    
     private String nome_Ficheiro;
-
+    
     private boolean ficheiroLocal;
-
+    
+    private int updtime = 0;
+    
     public FileInfo(String servidor, String nome_Ficheiro, boolean ficheiroLocal) {
         this.endereco_Servidor = servidor;
-
+        
         this.nome_Ficheiro = nome_Ficheiro;
-
+        
         this.ficheiroLocal = ficheiroLocal;
+        
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                updtime += 1;
+            }
+        }, 1000, 1000);
     }
 
+    public int getUpdtime() {
+        return updtime;
+    }
+
+    public void setUpdtime(int updtime) {
+        this.updtime = updtime;
+    }
+    
     public String getEndereco_Servidor() {
         return endereco_Servidor;
     }
-
+    
     public void setEndereco_Servidor(String endereco_Servidor) {
         this.endereco_Servidor = endereco_Servidor;
     }
@@ -60,27 +81,27 @@ public class FileInfo implements Comparable<FileInfo> {
     public void setFicheiroLocal(boolean ficheiroLocal) {
         this.ficheiroLocal = ficheiroLocal;
     }
-
+    
     @Override
     public int compareTo(FileInfo o) {
-
+        
         return this.nome_Ficheiro.compareTo(o.nome_Ficheiro);
     }
-
+    
     @Override
     public boolean equals(Object o) {
-
+        
         FileInfo f;
-
+        
         if (o instanceof FileInfo) {
             f = (FileInfo) o;
         } else {
             return false;
         }
-
+        
         return this.nome_Ficheiro.equals(f.nome_Ficheiro);
     }
-
+    
     @Override
     public String toString() {
         return P2PFileSharing.port + "|" + this.nome_Ficheiro;

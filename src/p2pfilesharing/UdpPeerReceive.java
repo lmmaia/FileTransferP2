@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -20,7 +22,7 @@ import java.util.TimerTask;
  */
 public class UdpPeerReceive implements Runnable {
 
-    private static HashMap< String, ArrayList<FileInfo>> mapa_Servidor_Ficheiros = new HashMap<>();
+    private static ConcurrentHashMap< String, CopyOnWriteArrayList<FileInfo>> mapa_Servidor_Ficheiros = new ConcurrentHashMap<>();
     static Timer t45 = new Timer();
     private DatagramSocket s;
 
@@ -39,7 +41,7 @@ public class UdpPeerReceive implements Runnable {
         t45.schedule(new TimerTask() {
             @Override
             public void run() {
-                for (String key : mapa_Servidor_Ficheiros.keySet()) {
+                for (String key : mapa_Servidor_Ficheiros.keySet()) {                    
                     for (FileInfo file : mapa_Servidor_Ficheiros.get(key)) {
                         double lastupdate = (System.nanoTime() - file.getUpdtime()) / 1000000000.0;
                         if (lastupdate > 45) {
@@ -49,9 +51,13 @@ public class UdpPeerReceive implements Runnable {
                             System.out.println(file.getEndereco_Servidor() + " " + file.getNome_Ficheiro() + " last update:" + lastupdate);
                         }
                     }
+                    if(mapa_Servidor_Ficheiros.get(key).isEmpty()){
+                        mapa_Servidor_Ficheiros.remove(key);
+                        System.out.println("removed: "+key);
+                    }
                 }
             }
-        }, 45000, 45000);
+        }, 0, 45000);
         while (true) {
             p.setLength(data.length);
             try {
@@ -131,7 +137,7 @@ public class UdpPeerReceive implements Runnable {
                                     mapa_Servidor_Ficheiros.get(fileInfo[0]).add(peerFile);
                                 }
                             } else {
-                                ArrayList<FileInfo> peerFiles = new ArrayList<>();
+                                CopyOnWriteArrayList<FileInfo> peerFiles = new CopyOnWriteArrayList<>();
                                 peerFiles.add(new FileInfo(fileInfo[0], fileInfo[1], true));
                                 mapa_Servidor_Ficheiros.put(fileInfo[0], peerFiles);
                             }

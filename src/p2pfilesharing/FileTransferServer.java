@@ -65,10 +65,20 @@ public class FileTransferServer implements Runnable {
             }
             while (true) {
                 changeLock.acquire();
-                for(i=0; i<MAXCLI; i++) if(!inUse[i]) break; // find a free socket
+                for (i = 0; i < MAXCLI; i++) {
+                    if (!inUse[i]) {
+                        break; // find a free socket
+                    }
+                }
                 changeLock.release();
-                cliSock[i] = ssock.accept();
-                inUse[i]=true;
+                try {
+                    cliSock[i] = ssock.accept();
+                } catch (java.net.SocketException ex) {
+                    System.out.println("Local port its closed.");
+                    break;
+                   // System.exit(1);
+                }
+                inUse[i] = true;
                 //The InetAddress specification
                 InetAddress IA = bcastAddress;
 
@@ -119,13 +129,13 @@ public class FileTransferServer implements Runnable {
                 }
 
                 os.flush();
+                System.out.println("File sent succesfully!");
                 //File transfer done. Close the socket connection!
-                inUse[i]=false;
+                inUse[i] = false;
                 cliSock[i].close();
             }
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("File sent succesfully!");
     }
 }

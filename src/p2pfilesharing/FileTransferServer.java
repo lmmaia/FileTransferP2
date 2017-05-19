@@ -68,7 +68,7 @@ public class FileTransferServer implements Runnable {
                 for(i=0; i<MAXCLI; i++) if(!inUse[i]) break; // find a free socket
                 changeLock.release();
                 cliSock[i] = ssock.accept();
-
+                inUse[i]=true;
                 //The InetAddress specification
                 InetAddress IA = bcastAddress;
 

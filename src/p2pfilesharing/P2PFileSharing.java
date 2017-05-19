@@ -107,11 +107,11 @@ public class P2PFileSharing {
                 changeLock.release();
             }
             if (entrada.compareToIgnoreCase("DOWNLOAD") == 0) {
-                frame.setEntry("");
+                System.out.println("entrei");//DEBUG
                 //System.out.print("Select User ip:");
-                Thread.sleep(1);
+                //Thread.sleep(1);
                 changeLock.acquire();
-
+                frame.setEntry("");
                 String ip = frame.getDwnIp();//in.readLine();
                 //System.out.print("Select file to download:");
                 String file = frame.getDwnFileName();//in.readLine();

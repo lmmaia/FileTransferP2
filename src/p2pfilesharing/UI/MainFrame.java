@@ -138,6 +138,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void dwnl_btActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dwnl_btActionPerformed
         FileInfo f = files_list.getSelectedValue();
         if (f != null) {
+            System.out.println("entrei no botao");//DEBUG
             setDwnIp(f.getEndereco_Servidor());
             setDwnFileName(f.getNome_Ficheiro());
             setEntry("Download");

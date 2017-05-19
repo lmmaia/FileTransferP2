@@ -73,7 +73,7 @@ public class FileTransferServer implements Runnable {
                 InetAddress IA = bcastAddress;
 
                 //Specify the file0
-                String folder = "download/";
+                String folder = "shared/";
                 File f = new File(folder);
                 Boolean created = false;
                 if (!f.exists()) {
@@ -120,6 +120,7 @@ public class FileTransferServer implements Runnable {
 
                 os.flush();
                 //File transfer done. Close the socket connection!
+                inUse[i]=false;
                 cliSock[i].close();
                 ssock.close();
             }

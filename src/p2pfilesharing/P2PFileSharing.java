@@ -29,7 +29,6 @@ public class P2PFileSharing {
     public static InetAddress[] peerAddress = new InetAddress[MAXCLI];
 
     public static Semaphore changeLock = new Semaphore(1);
-    ;
     static InetAddress bcastAddress;
     static DatagramSocket sock;
     static int port = 32008;

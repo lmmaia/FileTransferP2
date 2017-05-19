@@ -29,18 +29,18 @@ public class P2PFileSharing {
     public static InetAddress[] peerAddress = new InetAddress[MAXCLI];
 
     public static Semaphore changeLock = new Semaphore(1);
-
+    ;
     static InetAddress bcastAddress;
     static DatagramSocket sock;
     static int port = 32008;
-    static String nick, frase;
+    static int porto = 32005;
+    static String nick, frase,downloadingFile;
     static byte[] data = new byte[300];
     static byte[] fraseData;
     static int i;
     static DatagramPacket udpPacket;
 
     public static void main(String args[]) throws Exception {
-
         try {
             sock = new DatagramSocket(port);
         } catch (IOException ex) {
@@ -65,6 +65,8 @@ public class P2PFileSharing {
 
         Thread udpReceiver = new Thread(new UdpPeerReceive(sock));
         udpReceiver.start();
+        Thread fileTransferServer = new Thread(new FileTransferServer(bcastAddress, porto));
+        fileTransferServer.start();
         // Every 30s sends update from local files list
         Timer t = new Timer();
         t.schedule(new TimerTask() {
@@ -94,20 +96,25 @@ public class P2PFileSharing {
                 }
                 changeLock.release();
                 System.out.println("");
-            } /*else {
-                frase = "(" + nick + ") " + frase; //TODO: imprimir a lista de ficheiros 
-                fraseData = frase.getBytes();
-                udpPacket.setData(fraseData);
-                udpPacket.setLength(frase.length());
+            }
+            if (frase.compareToIgnoreCase("DOWNLOAD") == 0) {
+                System.out.print("Select User ip:");
                 changeLock.acquire();
+                String ip = in.readLine();
+                System.out.print("Select file to download:");
+                String file = in.readLine();
+                Thread fileTransferClient = null ;
                 for (i = 0; i < MAXCLI; i++) {
-                    if (peerActive[i]) {
-                        udpPacket.setAddress(peerAddress[i]);
-                        sock.send(udpPacket);
+                    if (peerActive[i] && ip.equals(peerAddress[i].getHostAddress())) {
+                        downloadingFile=file;
+                        fileTransferClient = new Thread(new FileTransferClient(peerAddress[i], porto, file));
+                        fileTransferClient.start();
+                        break;
                     }
                 }
                 changeLock.release();
-            }*/
+                System.out.println("");
+            }
         }
 
         data[0] = 0;
@@ -123,6 +130,7 @@ public class P2PFileSharing {
         UdpPeerReceive.t45.cancel();
         sock.close();
         udpReceiver.join();
+        fileTransferServer.join();
     }
 
     public static void sendAnnouncement() throws InterruptedException, IOException {

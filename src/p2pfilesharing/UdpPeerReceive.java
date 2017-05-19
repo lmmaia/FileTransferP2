@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +23,7 @@ public class UdpPeerReceive implements Runnable {
     private static ConcurrentHashMap< String, CopyOnWriteArrayList<FileInfo>> mapa_Servidor_Ficheiros = new ConcurrentHashMap<>();
     static Timer t45 = new Timer();
     private DatagramSocket s;
-
+    
     public UdpPeerReceive(DatagramSocket udp_s) {
         s = udp_s;
     }
@@ -58,6 +56,7 @@ public class UdpPeerReceive implements Runnable {
                 }
             }
         }, 0, 45000);
+        
         while (true) {
             p.setLength(data.length);
             try {

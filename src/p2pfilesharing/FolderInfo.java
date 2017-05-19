@@ -95,20 +95,6 @@ public class FolderInfo {
             } catch (UnknownHostException ex) {
                 System.out.println(ex);
             }
-
-            String hostAddress = null;
-
-            /* try {
-                
-                hostAddress = getIP_Local();  // Obtem o IP da maquina atual
-                
-            } catch (SocketException ex) {
-                System.out.println(ex);
-            }
-            
-            String hostName = localHost.getHostName();
-
-            servidor_local = new Servidor( hostAddress, hostName, true); // Servidor local*/
         }
         ArrayList<String> listaCaminhos = new ArrayList<>();
 
@@ -181,5 +167,5 @@ public class FolderInfo {
     public static void setListaFicheiros(ArrayList<FileInfo> listaFicheiros) {
         FolderInfo.listaFicheiros = listaFicheiros;
     }
-    
+
 }

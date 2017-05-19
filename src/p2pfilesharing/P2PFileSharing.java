@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  */
 public class P2PFileSharing {
 
-    public static int MAXCLI = 100;
+    public static final int MAXCLI = 100;
     public static Boolean[] peerActive = new Boolean[MAXCLI];
     public static InetAddress[] peerAddress = new InetAddress[MAXCLI];
 

@@ -11,6 +11,7 @@ package p2pfilesharing;
  */
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +28,13 @@ public class FileTransferServer implements Runnable {
     InetAddress bcastAddress;
     int port;
     String filename;
+    public static int MAXCLI = 100;
+    public static Socket[] cliSock = new Socket[MAXCLI];
+    public static DataOutputStream[] sOut = new DataOutputStream[MAXCLI];
+    public static Boolean[] inUse = new Boolean[MAXCLI];
+    public static Semaphore changeLock = new Semaphore(1);
+
+    static ServerSocket ssock;
 
     FileTransferServer(InetAddress bcastAddress, int port) {
         this.bcastAddress = bcastAddress;
@@ -42,12 +51,23 @@ public class FileTransferServer implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            //Initialize Sockets
+        int i;
+        //Initialize Sockets
+        try {
             try {
-                ServerSocket ssock = new ServerSocket(port);
-
-                Socket socket = ssock.accept();
+                ssock = new ServerSocket(port);
+            } catch (IOException ex) {
+                System.out.println("Local port number not available.");
+                System.exit(1);
+            }
+            for (i = 0; i < MAXCLI; i++) {
+                inUse[i] = false;
+            }
+            while (true) {
+                changeLock.acquire();
+                for(i=0; i<MAXCLI; i++) if(!inUse[i]) break; // find a free socket
+                changeLock.release();
+                cliSock[i] = ssock.accept();
 
                 //The InetAddress specification
                 InetAddress IA = bcastAddress;
@@ -67,16 +87,16 @@ public class FileTransferServer implements Runnable {
                 }
                 DataInputStream sIn;
                 byte[] data = new byte[300];
-                sIn = new DataInputStream(socket.getInputStream());
+                sIn = new DataInputStream(cliSock[i].getInputStream());
                 int nChars = sIn.read();
                 sIn.read(data, 0, nChars); // read the line
-                filename = new String(data, 0, nChars); 
+                filename = new String(data, 0, nChars);
                 File file = new File("shared/" + filename);
                 FileInputStream fis = (created) ? new FileInputStream(f.toString() + "/" + filename) : new FileInputStream(file);
                 BufferedInputStream bis = new BufferedInputStream(fis);
 
                 //Get socket's output stream
-                OutputStream os = socket.getOutputStream();
+                OutputStream os = cliSock[i].getOutputStream();
 
                 //Read File Contents into contents array 
                 byte[] contents;
@@ -100,12 +120,12 @@ public class FileTransferServer implements Runnable {
 
                 os.flush();
                 //File transfer done. Close the socket connection!
-                socket.close();
+                cliSock[i].close();
                 ssock.close();
-            } catch (IOException ex) {
-                Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println("File sent succesfully!");
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("File sent succesfully!");
     }
 }

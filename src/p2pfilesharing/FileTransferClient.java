@@ -39,14 +39,20 @@ public class FileTransferClient implements Runnable {
     public void run() {
         try {
             //Initialize socket
-            Socket socket = new Socket(inetAddress, port);
+            Socket socket = null;
+            try {
+                socket = new Socket(inetAddress, port);
+            } catch (IOException ex) {
+                System.out.println("Failed to connect.");
+                System.exit(1);
+            }
             byte[] contents = new byte[10000];
             byte[] nameData;
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             DataOutputStream sOut = new DataOutputStream(socket.getOutputStream());
-            nameData=fileName.getBytes();
-            sOut.write((byte)fileName.length());
-            sOut.write(nameData,0,(byte)fileName.length());
+            nameData = fileName.getBytes();
+            sOut.write((byte) fileName.length());
+            sOut.write(nameData, 0, (byte) fileName.length());
             //Initialize the FileOutputStream to the output file's full path.
             String folder = "download/";
             File f = new File(folder);

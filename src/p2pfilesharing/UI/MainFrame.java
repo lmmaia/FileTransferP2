@@ -17,7 +17,6 @@ import p2pfilesharing.UdpPeerReceive;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    private String entry;
     private String dwnIp;
     private String dwnFileName;
     private DefaultListModel listModel = new DefaultListModel();
@@ -29,7 +28,6 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame(String nick) {
         initComponents();
-        this.entry = "";
         welcome_txtfield.setText("Welcome " + nick);
     }
 
@@ -47,14 +45,6 @@ public class MainFrame extends javax.swing.JFrame {
 
     public void setDwnFileName(String dwnFileName) {
         this.dwnFileName = dwnFileName;
-    }
-
-    public String getEntry() {
-        return entry;
-    }
-
-    public void setEntry(String entry) {
-        this.entry = entry;
     }
 
     public void setMessageText(String text) {
@@ -138,10 +128,10 @@ public class MainFrame extends javax.swing.JFrame {
     private void dwnl_btActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dwnl_btActionPerformed
         FileInfo f = files_list.getSelectedValue();
         if (f != null) {
-            System.out.println("entrei no botao");//DEBUG
             setDwnIp(f.getEndereco_Servidor());
             setDwnFileName(f.getNome_Ficheiro());
-            setEntry("Download");
+            p2pfilesharing.P2PFileSharing.entrada="Download";
+            //setEntry("Download");
         }
     }//GEN-LAST:event_dwnl_btActionPerformed
     public void updateList() {

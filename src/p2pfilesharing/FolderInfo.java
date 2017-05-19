@@ -107,7 +107,7 @@ public class FolderInfo {
         listaFicheiros.removeAll(listaFicheiros_Locais);
 
         for (String caminho : listaCaminhos) {
-
+            caminho= caminho.replace("/", "");
             FileInfo fich = new FileInfo(servidor_local, caminho, true); // Ficheiro local
 
             fich.toString();

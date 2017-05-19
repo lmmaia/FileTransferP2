@@ -145,8 +145,8 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_dwnl_btActionPerformed
     public void updateList() {
         ArrayList<FileInfo> fi;
+        listModel = new DefaultListModel();
         for (CopyOnWriteArrayList<FileInfo> value : UdpPeerReceive.mapa_Servidor_Ficheiros.values()) {
-            listModel = new DefaultListModel();
             for (FileInfo fileInfo : value) {
                 listModel.addElement(fileInfo);
             }

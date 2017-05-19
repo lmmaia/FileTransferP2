@@ -96,6 +96,7 @@ public class P2PFileSharing {
                 break;
             }
             if (entrada.compareToIgnoreCase("LIST") == 0) {
+                frame.setEntry("");
                 System.out.print("Active peers:");
                 changeLock.acquire();
                 for (i = 0; i < MAXCLI; i++) {
@@ -104,11 +105,13 @@ public class P2PFileSharing {
                     }
                 }
                 changeLock.release();
-                frame.setEntry("");
             }
             if (entrada.compareToIgnoreCase("DOWNLOAD") == 0) {
+                frame.setEntry("");
                 //System.out.print("Select User ip:");
+                Thread.sleep(1);
                 changeLock.acquire();
+
                 String ip = frame.getDwnIp();//in.readLine();
                 //System.out.print("Select file to download:");
                 String file = frame.getDwnFileName();//in.readLine();
@@ -121,7 +124,6 @@ public class P2PFileSharing {
                     }
                 }
                 changeLock.release();
-                frame.setEntry("");
             }
         }
 

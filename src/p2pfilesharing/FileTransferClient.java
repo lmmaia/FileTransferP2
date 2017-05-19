@@ -85,9 +85,9 @@ public class FileTransferClient implements Runnable {
             System.out.println("File saved successfully!");
         } catch (java.net.SocketException e) {
             P2PFileSharing.frame.setMessageText("Failed!");
-            System.out.println("File saved successfully!");
         } catch (IOException ex) {
             Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
+            P2PFileSharing.frame.setMessageText("Failed!");
         }
     }
 }

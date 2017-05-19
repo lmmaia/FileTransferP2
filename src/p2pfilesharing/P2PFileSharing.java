@@ -34,7 +34,7 @@ public class P2PFileSharing {
     static DatagramSocket sock;
     static int port = 32008;
     static int porto = 32005;
-    static String nick, frase,downloadingFile;
+    static String nick, frase;
     static byte[] data = new byte[300];
     static byte[] fraseData;
     static int i;
@@ -106,7 +106,6 @@ public class P2PFileSharing {
                 Thread fileTransferClient = null ;
                 for (i = 0; i < MAXCLI; i++) {
                     if (peerActive[i] && ip.equals(peerAddress[i].getHostAddress())) {
-                        downloadingFile=file;
                         fileTransferClient = new Thread(new FileTransferClient(peerAddress[i], porto, file));
                         fileTransferClient.start();
                         break;

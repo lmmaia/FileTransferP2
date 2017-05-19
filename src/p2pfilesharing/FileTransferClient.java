@@ -10,10 +10,13 @@ package p2pfilesharing;
  * @author Luís Maia
  */
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -38,7 +41,12 @@ public class FileTransferClient implements Runnable {
             //Initialize socket
             Socket socket = new Socket(inetAddress, port);
             byte[] contents = new byte[10000];
-
+            byte[] nameData;
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            DataOutputStream sOut = new DataOutputStream(socket.getOutputStream());
+            nameData=fileName.getBytes();
+            sOut.write((byte)fileName.length());
+            sOut.write(nameData,0,(byte)fileName.length());
             //Initialize the FileOutputStream to the output file's full path.
             String folder = "download/";
             File f = new File(folder);
@@ -65,6 +73,7 @@ public class FileTransferClient implements Runnable {
             }
 
             bos.flush();
+            sOut.close();
             socket.close();
         } catch (IOException ex) {
             Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);

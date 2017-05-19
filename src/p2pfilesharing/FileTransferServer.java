@@ -10,6 +10,7 @@ package p2pfilesharing;
  * @author Luís Maia
  */
 import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,64 +42,70 @@ public class FileTransferServer implements Runnable {
 
     @Override
     public void run() {
-        //Initialize Sockets
-        try {
-            ServerSocket ssock = new ServerSocket(port);
+        while (true) {
+            //Initialize Sockets
+            try {
+                ServerSocket ssock = new ServerSocket(port);
 
-            Socket socket = ssock.accept();
+                Socket socket = ssock.accept();
 
-            //The InetAddress specification
-            InetAddress IA = bcastAddress;
+                //The InetAddress specification
+                InetAddress IA = bcastAddress;
 
-            //Specify the file
-            String folder = "download/";
-            File f = new File(folder);
-            Boolean created = false;
-            if (!f.exists()) {
-                try {
-                    created = f.mkdir();
-                } catch (Exception e) {
-                    System.out.println("Couldn't create the folder, the file will be saved in the current directory!");
-                }
-            } else {
-                created = true;
-            }
-            
-            this.filename = P2PFileSharing.downloadingFile;
-            File file = new File("shared/" + filename);
-            FileInputStream fis = (created) ? new FileInputStream(f.toString() + "/" + filename) : new FileInputStream(file);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-
-            //Get socket's output stream
-            OutputStream os = socket.getOutputStream();
-
-            //Read File Contents into contents array 
-            byte[] contents;
-            long fileLength = file.length();
-            long current = 0;
-
-            long start = System.nanoTime();
-            while (current != fileLength) {
-                int size = 10000;
-                if (fileLength - current >= size) {
-                    current += size;
+                //Specify the file0
+                String folder = "download/";
+                File f = new File(folder);
+                Boolean created = false;
+                if (!f.exists()) {
+                    try {
+                        created = f.mkdir();
+                    } catch (Exception e) {
+                        System.out.println("Couldn't create the folder, the file will be saved in the current directory!");
+                    }
                 } else {
-                    size = (int) (fileLength - current);
-                    current = fileLength;
+                    created = true;
                 }
-                contents = new byte[size];
-                bis.read(contents, 0, size);
-                os.write(contents);
-                System.out.print("Sending file ... " + (current * 100) / fileLength + "% complete!");
-            }
+                DataInputStream sIn;
+                byte[] data = new byte[300];
+                sIn = new DataInputStream(socket.getInputStream());
+                int nChars = sIn.read();
+                sIn.read(data, 0, nChars); // read the line
+                filename = new String(data, 0, nChars); 
+                File file = new File("shared/" + filename);
+                FileInputStream fis = (created) ? new FileInputStream(f.toString() + "/" + filename) : new FileInputStream(file);
+                BufferedInputStream bis = new BufferedInputStream(fis);
 
-            os.flush();
-            //File transfer done. Close the socket connection!
-            socket.close();
-            ssock.close();
-        } catch (IOException ex) {
-            Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
+                //Get socket's output stream
+                OutputStream os = socket.getOutputStream();
+
+                //Read File Contents into contents array 
+                byte[] contents;
+                long fileLength = file.length();
+                long current = 0;
+
+                long start = System.nanoTime();
+                while (current != fileLength) {
+                    int size = 10000;
+                    if (fileLength - current >= size) {
+                        current += size;
+                    } else {
+                        size = (int) (fileLength - current);
+                        current = fileLength;
+                    }
+                    contents = new byte[size];
+                    bis.read(contents, 0, size);
+                    os.write(contents);
+                    System.out.print("Sending file ... " + (current * 100) / fileLength + "% complete!");
+                }
+
+                os.flush();
+                //File transfer done. Close the socket connection!
+                socket.close();
+                ssock.close();
+            } catch (IOException ex) {
+                Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            System.out.println("File sent succesfully!");
         }
-        System.out.println("File sent succesfully!");
     }
 }

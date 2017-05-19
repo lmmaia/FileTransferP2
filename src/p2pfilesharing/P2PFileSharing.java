@@ -36,7 +36,7 @@ public class P2PFileSharing {
     static DatagramSocket sock;
     static int port = 32008;
     static int porto = 32005;
-    public static String nick, frase, entrada="";
+    public static String nick, frase = "", entrada = "";
     static byte[] data = new byte[300];
     static byte[] fraseData;
     static int i;
@@ -91,12 +91,10 @@ public class P2PFileSharing {
         }, 0, 30000);
 
         while (true) {
-            //entrada = frame.getEntry();//in.readLine();
             if (entrada.compareToIgnoreCase("EXIT") == 0) {
                 break;
             }
             if (entrada.compareToIgnoreCase("LIST") == 0) {
-                entrada="";
                 System.out.print("Active peers:");
                 changeLock.acquire();
                 for (i = 0; i < MAXCLI; i++) {
@@ -105,13 +103,12 @@ public class P2PFileSharing {
                     }
                 }
                 changeLock.release();
+                entrada = "";
             }
             if (entrada.compareToIgnoreCase("DOWNLOAD") == 0) {
                 System.out.println("entrei");//DEBUG
                 //System.out.print("Select User ip:");
-                //Thread.sleep(1);
                 changeLock.acquire();
-                entrada="";
                 String ip = frame.getDwnIp();//in.readLine();
                 //System.out.print("Select file to download:");
                 String file = frame.getDwnFileName();//in.readLine();
@@ -124,6 +121,7 @@ public class P2PFileSharing {
                     }
                 }
                 changeLock.release();
+                entrada = "";
             }
         }
 
@@ -153,7 +151,7 @@ public class P2PFileSharing {
         }
         fraseData = frase.getBytes();
         udpPacket.setData(fraseData);
-        udpPacket.setLength(frase.length());
+        udpPacket.setLength(frase.length()+2);
         changeLock.acquire();
         for (i = 0; i < MAXCLI; i++) {
             if (peerActive[i]) {

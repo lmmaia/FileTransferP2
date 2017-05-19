@@ -131,7 +131,6 @@ public class MainFrame extends javax.swing.JFrame {
             setDwnIp(f.getEndereco_Servidor());
             setDwnFileName(f.getNome_Ficheiro());
             p2pfilesharing.P2PFileSharing.entrada="Download";
-            //setEntry("Download");
         }
     }//GEN-LAST:event_dwnl_btActionPerformed
     public void updateList() {

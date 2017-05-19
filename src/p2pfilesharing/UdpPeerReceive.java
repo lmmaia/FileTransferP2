@@ -20,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class UdpPeerReceive implements Runnable {
 
-    private static ConcurrentHashMap< String, CopyOnWriteArrayList<FileInfo>> mapa_Servidor_Ficheiros = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap< String, CopyOnWriteArrayList<FileInfo>> mapa_Servidor_Ficheiros = new ConcurrentHashMap<>();
     static Timer t45 = new Timer();
     private DatagramSocket s;
     
@@ -54,6 +54,7 @@ public class UdpPeerReceive implements Runnable {
                         System.out.println("removed: "+key);
                     }
                 }
+                P2PFileSharing.frame.updateList();
             }
         }, 0, 45000);
         
@@ -140,9 +141,9 @@ public class UdpPeerReceive implements Runnable {
                                 peerFiles.add(new FileInfo(fileInfo[0], fileInfo[1], true));
                                 mapa_Servidor_Ficheiros.put(fileInfo[0], peerFiles);
                             }
-                        } else {
+                        } /*else {
                             System.out.println("my own list");
-                        }
+                        }*/
                     }
                     break;
             }

@@ -17,7 +17,9 @@ import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import static p2pfilesharing.FileTransferServer.ssock;
+import p2pfilesharing.UI.MainFrame;
 
 /**
  *
@@ -34,11 +36,12 @@ public class P2PFileSharing {
     static DatagramSocket sock;
     static int port = 32008;
     static int porto = 32005;
-    static String nick, frase;
+    public static String nick, frase, entrada;
     static byte[] data = new byte[300];
     static byte[] fraseData;
     static int i;
     static DatagramPacket udpPacket;
+    static MainFrame frame;
 
     public static void main(String args[]) throws Exception {
         try {
@@ -50,8 +53,14 @@ public class P2PFileSharing {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        System.out.print("Nickname: ");
-        nick = in.readLine();
+        nick = JOptionPane.showInputDialog(null, "Nickname: ", "Welcome", JOptionPane.QUESTION_MESSAGE);
+        if (nick == null) {
+            return;
+        }
+        //System.out.print("Nickname: ");
+        //nick = in.readLine();
+        frame = new MainFrame(nick);
+        frame.setVisible(true);
 
         for (i = 0; i < MAXCLI; i++) {
             peerActive[i] = false;
@@ -82,11 +91,11 @@ public class P2PFileSharing {
         }, 0, 30000);
 
         while (true) {
-            frase = in.readLine();
-            if (frase.compareToIgnoreCase("EXIT") == 0) {
+            entrada = frame.getEntry();//in.readLine();
+            if (entrada.compareToIgnoreCase("EXIT") == 0) {
                 break;
             }
-            if (frase.compareToIgnoreCase("LIST") == 0) {
+            if (entrada.compareToIgnoreCase("LIST") == 0) {
                 System.out.print("Active peers:");
                 changeLock.acquire();
                 for (i = 0; i < MAXCLI; i++) {
@@ -95,15 +104,15 @@ public class P2PFileSharing {
                     }
                 }
                 changeLock.release();
-                System.out.println("");
+                frame.setEntry("");
             }
-            if (frase.compareToIgnoreCase("DOWNLOAD") == 0) {
-                System.out.print("Select User ip:");
+            if (entrada.compareToIgnoreCase("DOWNLOAD") == 0) {
+                //System.out.print("Select User ip:");
                 changeLock.acquire();
-                String ip = in.readLine();
-                System.out.print("Select file to download:");
-                String file = in.readLine();
-                Thread fileTransferClient = null ;
+                String ip = frame.getDwnIp();//in.readLine();
+                //System.out.print("Select file to download:");
+                String file = frame.getDwnFileName();//in.readLine();
+                Thread fileTransferClient = null;
                 for (i = 0; i < MAXCLI; i++) {
                     if (peerActive[i] && ip.equals(peerAddress[i].getHostAddress())) {
                         fileTransferClient = new Thread(new FileTransferClient(peerAddress[i], porto, file));
@@ -112,7 +121,7 @@ public class P2PFileSharing {
                     }
                 }
                 changeLock.release();
-                System.out.println("");
+                frame.setEntry("");
             }
         }
 

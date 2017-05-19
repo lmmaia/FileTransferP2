@@ -14,6 +14,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -22,6 +23,7 @@ import java.net.Socket;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class FileTransferServer implements Runnable {
 
@@ -76,7 +78,7 @@ public class FileTransferServer implements Runnable {
                 } catch (java.net.SocketException ex) {
                     System.out.println("Local port its closed.");
                     break;
-                   // System.exit(1);
+                    // System.exit(1);
                 }
                 inUse[i] = true;
                 //The InetAddress specification
@@ -101,39 +103,49 @@ public class FileTransferServer implements Runnable {
                 int nChars = sIn.read();
                 sIn.read(data, 0, nChars); // read the line
                 filename = new String(data, 0, nChars);
-                File file = new File("shared/" + filename);
-                FileInputStream fis = (created) ? new FileInputStream(f.toString() + "/" + filename) : new FileInputStream(file);
-                BufferedInputStream bis = new BufferedInputStream(fis);
+                File file;
+                try {
+                    file = new File("shared/" + filename);
 
-                //Get socket's output stream
-                OutputStream os = cliSock[i].getOutputStream();
+                    FileInputStream fis = (created) ? new FileInputStream(f.toString() + "/" + filename) : new FileInputStream(file);
+                    BufferedInputStream bis = new BufferedInputStream(fis);
 
-                //Read File Contents into contents array 
-                byte[] contents;
-                long fileLength = file.length();
-                long current = 0;
+                    //Get socket's output stream
+                    OutputStream os = cliSock[i].getOutputStream();
 
-                long start = System.nanoTime();
-                while (current != fileLength) {
-                    int size = 10000;
-                    if (fileLength - current >= size) {
-                        current += size;
-                    } else {
-                        size = (int) (fileLength - current);
-                        current = fileLength;
+                    //Read File Contents into contents array 
+                    byte[] contents;
+                    long fileLength = file.length();
+                    long current = 0;
+
+                    long start = System.nanoTime();
+                    while (current != fileLength) {
+                        int size = 10000;
+                        if (fileLength - current >= size) {
+                            current += size;
+                        } else {
+                            size = (int) (fileLength - current);
+                            current = fileLength;
+                        }
+                        contents = new byte[size];
+                        bis.read(contents, 0, size);
+                        os.write(contents);
+                        P2PFileSharing.frame.setMessageText("Sending file ... " + (current * 100) / fileLength + "% complete!");
+                        System.out.print("Sending file ... " + (current * 100) / fileLength + "% complete!");
                     }
-                    contents = new byte[size];
-                    bis.read(contents, 0, size);
-                    os.write(contents);
-                    System.out.print("Sending file ... " + (current * 100) / fileLength + "% complete!");
-                }
 
-                os.flush();
-                System.out.println("File sent succesfully!");
+                    os.flush();
+
+                    P2PFileSharing.frame.setMessageText("File sent succesfully!");
+                    System.out.println("File sent succesfully!");
+                } catch (FileNotFoundException e) {
+                    P2PFileSharing.frame.setMessageText(filename+"-File Not Found!");
+                }
                 //File transfer done. Close the socket connection!
                 inUse[i] = false;
                 cliSock[i].close();
             }
+
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
         }

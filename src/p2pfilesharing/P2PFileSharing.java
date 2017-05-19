@@ -17,6 +17,7 @@ import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static p2pfilesharing.FileTransferServer.ssock;
 
 /**
  *
@@ -127,6 +128,7 @@ public class P2PFileSharing {
         t.cancel();
         UdpPeerReceive.t45.cancel();
         sock.close();
+        ssock.close();
         udpReceiver.join();
         fileTransferServer.join();
     }

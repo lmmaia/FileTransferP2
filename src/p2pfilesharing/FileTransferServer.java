@@ -122,7 +122,6 @@ public class FileTransferServer implements Runnable {
                 //File transfer done. Close the socket connection!
                 inUse[i]=false;
                 cliSock[i].close();
-                ssock.close();
             }
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);

@@ -7,6 +7,8 @@ package p2pfilesharing.UI;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import p2pfilesharing.FileInfo;
 import p2pfilesharing.UdpPeerReceive;
@@ -50,7 +52,9 @@ public class MainFrame extends javax.swing.JFrame {
     public void setMessageText(String text) {
         mess_label.setText(text);
     }
-
+    public void addtoLog(String text){
+        log_txtarea.append(text);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -66,6 +70,10 @@ public class MainFrame extends javax.swing.JFrame {
         inst_label = new javax.swing.JLabel();
         mess_label = new javax.swing.JLabel();
         welcome_txtfield = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        log_txtarea = new javax.swing.JTextArea();
+        log_label = new javax.swing.JLabel();
+        list_button = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("P2P FILE SHARING");
@@ -85,6 +93,19 @@ public class MainFrame extends javax.swing.JFrame {
 
         welcome_txtfield.setText("Welcome ");
 
+        log_txtarea.setColumns(20);
+        log_txtarea.setRows(5);
+        jScrollPane2.setViewportView(log_txtarea);
+
+        log_label.setText("Log:");
+
+        list_button.setText("LIST IPs");
+        list_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                list_buttonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -92,34 +113,48 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(inst_label)
+                    .addComponent(welcome_txtfield))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(40, 40, 40)
+                        .addComponent(log_label)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dwnl_bt)
-                            .addComponent(mess_label)))
-                    .addComponent(inst_label)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(107, 107, 107)
-                        .addComponent(welcome_txtfield)))
-                .addContainerGap(55, Short.MAX_VALUE))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(mess_label)
+                            .addComponent(list_button))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(welcome_txtfield)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(inst_label)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addComponent(welcome_txtfield))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(log_label)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(inst_label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(list_button)
+                        .addGap(34, 34, 34)
                         .addComponent(dwnl_bt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mess_label)
-                        .addGap(68, 68, 68)))
-                .addContainerGap(46, Short.MAX_VALUE))
+                        .addComponent(mess_label)))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
 
         pack();
@@ -130,9 +165,21 @@ public class MainFrame extends javax.swing.JFrame {
         if (f != null) {
             setDwnIp(f.getEndereco_Servidor());
             setDwnFileName(f.getNome_Ficheiro());
-            p2pfilesharing.P2PFileSharing.entrada="Download";
+            try {
+                p2pfilesharing.P2PFileSharing.download();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_dwnl_btActionPerformed
+
+    private void list_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_list_buttonActionPerformed
+        try {
+            p2pfilesharing.P2PFileSharing.list();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_list_buttonActionPerformed
     public void updateList() {
         ArrayList<FileInfo> fi;
         listModel = new DefaultListModel();
@@ -150,6 +197,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JList<FileInfo> files_list;
     private javax.swing.JLabel inst_label;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton list_button;
+    private javax.swing.JLabel log_label;
+    private javax.swing.JTextArea log_txtarea;
     private javax.swing.JLabel mess_label;
     private javax.swing.JLabel welcome_txtfield;
     // End of variables declaration//GEN-END:variables

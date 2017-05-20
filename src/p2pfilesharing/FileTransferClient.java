@@ -22,6 +22,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static p2pfilesharing.P2PFileSharing.frame;
 
 public class FileTransferClient implements Runnable {
 
@@ -81,13 +82,13 @@ public class FileTransferClient implements Runnable {
             bos.flush();
             sOut.close();
             socket.close();
-            P2PFileSharing.frame.setMessageText("File saved successfully!");
+            P2PFileSharing.frame.addtoLog("File saved successfully!");
             System.out.println("File saved successfully!");
         } catch (java.net.SocketException e) {
-            P2PFileSharing.frame.setMessageText("Failed!");
+            P2PFileSharing.frame.addtoLog("Failed!");
         } catch (IOException ex) {
             Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
-            P2PFileSharing.frame.setMessageText("Failed!");
+            P2PFileSharing.frame.addtoLog("Failed!");
         }
     }
 }

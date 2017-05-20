@@ -49,9 +49,9 @@ public class MainFrame extends javax.swing.JFrame {
         this.dwnFileName = dwnFileName;
     }
 
-    public void setMessageText(String text) {
+    /*public void setMessageText(String text) {
         mess_label.setText(text);
-    }
+    }*/
     public void addtoLog(String text){
         log_txtarea.append(text);
     }

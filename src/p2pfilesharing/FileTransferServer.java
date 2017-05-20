@@ -24,6 +24,7 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import static p2pfilesharing.P2PFileSharing.frame;
 
 public class FileTransferServer implements Runnable {
 
@@ -130,16 +131,16 @@ public class FileTransferServer implements Runnable {
                         contents = new byte[size];
                         bis.read(contents, 0, size);
                         os.write(contents);
-                        P2PFileSharing.frame.setMessageText("Sending file ... " + (current * 100) / fileLength + "% complete!");
+                        P2PFileSharing.frame.addtoLog("Sending file ... " + (current * 100) / fileLength + "% complete!");
                         System.out.print("Sending file ... " + (current * 100) / fileLength + "% complete!");
                     }
 
                     os.flush();
 
-                    P2PFileSharing.frame.setMessageText("File sent succesfully!");
+                    P2PFileSharing.frame.addtoLog("File sent succesfully!");
                     System.out.println("File sent succesfully!");
                 } catch (FileNotFoundException e) {
-                    P2PFileSharing.frame.setMessageText(filename+"-File Not Found!");
+                    P2PFileSharing.frame.addtoLog(filename+"-File Not Found!");
                 }
                 //File transfer done. Close the socket connection!
                 inUse[i] = false;

@@ -102,9 +102,7 @@ public class FolderInfo {
 
         ArrayList<FileInfo> ficheiros = new ArrayList<>();
 
-        ArrayList<FileInfo> listaFicheiros_Locais = getListaFicheiros_Locais();
-
-        listaFicheiros.removeAll(listaFicheiros_Locais);
+        listaFicheiros.removeAll(listaFicheiros);
 
         for (String caminho : listaCaminhos) {
             caminho= caminho.replace("/", "");
@@ -142,22 +140,6 @@ public class FolderInfo {
 
             listaFicheiros.add(ficheiro);
         }
-    }
-
-    /**
-     * @return the listaFicheiros
-     */
-    public static ArrayList<FileInfo> getListaFicheiros_Locais() {
-
-        String servidorLocal = null;
-
-        if (servidorLocal == null) {
-            return new ArrayList<>();
-        }
-
-        ArrayList<FileInfo> array = mapa_Servidor_Ficheiros.get(servidorLocal);
-
-        return array;
     }
 
     public static ArrayList<FileInfo> getListaFicheiros() {

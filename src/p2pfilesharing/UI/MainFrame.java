@@ -5,11 +5,13 @@
  */
 package p2pfilesharing.UI;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.UIManager;
 import p2pfilesharing.FileInfo;
 import p2pfilesharing.UdpPeerReceive;
 
@@ -31,6 +33,11 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame(String nick) {
         initComponents();
         welcome_txtfield.setText("Welcome " + nick);
+        log_txtarea.setEnabled(false);
+        Color bgColor = UIManager.getColor("Transparent");
+        log_txtarea.setBackground(bgColor);
+        Color fgColor = UIManager.getColor("TextField.foreground");
+        log_txtarea.setDisabledTextColor(fgColor);
     }
 
     public String getDwnIp() {
@@ -88,6 +95,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         mess_label.setText("press to download");
 
+        welcome_txtfield.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         welcome_txtfield.setText("Welcome ");
 
         log_txtarea.setColumns(20);
@@ -151,7 +159,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(dwnl_bt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(mess_label)))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         pack();

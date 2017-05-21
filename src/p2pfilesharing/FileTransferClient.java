@@ -44,7 +44,7 @@ public class FileTransferClient implements Runnable {
             } catch (IOException ex) {
                 P2PFileSharing.frame.addtoLog("Failed to connect.\n");
                 System.out.println("Failed to connect.");
-                System.exit(1);
+                return;
             }
             byte[] contents = new byte[10000];
             byte[] nameData;
@@ -83,8 +83,6 @@ public class FileTransferClient implements Runnable {
             socket.close();
             P2PFileSharing.frame.addtoLog("File saved successfully!\n");
             System.out.println("File saved successfully!");
-        } catch (java.net.SocketException e) {
-            P2PFileSharing.frame.addtoLog("Failed!\n");
         } catch (IOException ex) {
             Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
             P2PFileSharing.frame.addtoLog("Failed!\n");

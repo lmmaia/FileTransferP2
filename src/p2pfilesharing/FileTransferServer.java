@@ -145,7 +145,7 @@ public class FileTransferServer implements Runnable {
                     P2PFileSharing.frame.addtoLog(filename+"-File Not Found!\n");
                 }
                 //File transfer done. Close the socket connection!
-                //inUse[i] = false;
+                inUse[i] = false;
                 cliSock[i].close();
             }
 

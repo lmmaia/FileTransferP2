@@ -131,16 +131,16 @@ public class FileTransferServer implements Runnable {
                         contents = new byte[size];
                         bis.read(contents, 0, size);
                         os.write(contents);
-                        P2PFileSharing.frame.addtoLog("Sending file ... " + (current * 100) / fileLength + "% complete!");
+                        P2PFileSharing.frame.addtoLog("Sending file ... " + (current * 100) / fileLength + "% complete!\n");
                         System.out.print("Sending file ... " + (current * 100) / fileLength + "% complete!");
                     }
 
                     os.flush();
 
-                    P2PFileSharing.frame.addtoLog("File sent succesfully!");
+                    P2PFileSharing.frame.addtoLog("File sent succesfully!\n");
                     System.out.println("File sent succesfully!");
                 } catch (FileNotFoundException e) {
-                    P2PFileSharing.frame.addtoLog(filename+"-File Not Found!");
+                    P2PFileSharing.frame.addtoLog(filename+"-File Not Found!\n");
                 }
                 //File transfer done. Close the socket connection!
                 inUse[i] = false;

@@ -66,23 +66,29 @@ public class FileTransferClient implements Runnable {
             } else {
                 created = true;
             }
-
-            FileOutputStream fos = (created) ? new FileOutputStream(f.toString() + "/" + fileName) : new FileOutputStream(fileName);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            BufferedOutputStream bos = null;
             InputStream is = socket.getInputStream();
 
             //No of bytes read in one read() call
             int bytesRead = 0;
-
+            int flag = 0;
             while ((bytesRead = is.read(contents)) != -1) {
+                if (flag == 0) {
+                    FileOutputStream fos = (created) ? new FileOutputStream(f.toString() + "/" + fileName) : new FileOutputStream(fileName);
+                    bos = new BufferedOutputStream(fos);
+                }
                 bos.write(contents, 0, bytesRead);
+                flag = 1;
             }
-
-            bos.flush();
+            if (flag == 0) {
+                P2PFileSharing.frame.addtoLog(fileName + " Failed!\n");
+            } else {
+                bos.flush();
+                P2PFileSharing.frame.addtoLog("File saved successfully!\n");
+                System.out.println("File saved successfully!");
+            }
             sOut.close();
             socket.close();
-            P2PFileSharing.frame.addtoLog("File saved successfully!\n");
-            System.out.println("File saved successfully!");
         } catch (IOException ex) {
             Logger.getLogger(FileTransferServer.class.getName()).log(Level.SEVERE, null, ex);
             P2PFileSharing.frame.addtoLog("Failed!\n");

@@ -102,6 +102,8 @@ public class P2PFileSharing {
 
     /*while (true) {*/
     public static void exit() throws IOException, InterruptedException {
+        t.cancel();
+        UdpPeerReceive.t45.cancel();
         data[0] = 0;
         udpPacket.setData(data);
         udpPacket.setLength(1);
@@ -111,8 +113,6 @@ public class P2PFileSharing {
                 sock.send(udpPacket);
             }
         }
-        t.cancel();
-        UdpPeerReceive.t45.cancel();
         ssock.close();
         sock.close();
         udpReceiver.join();

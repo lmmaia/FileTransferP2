@@ -19,7 +19,7 @@ public class FolderInfo {
 
     private static final String PASTA_RAIZ = "shared";
 
-    private static final HashMap< String, ArrayList<FileInfo>> mapa_Servidor_Ficheiros = new HashMap<>();
+    private static HashMap< String, ArrayList<FileInfo>> mapa_Servidor_Ficheiros = new HashMap<>();
 
     private static ArrayList<FileInfo> listaFicheiros = new ArrayList<>();
 

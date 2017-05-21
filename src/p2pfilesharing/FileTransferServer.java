@@ -23,15 +23,17 @@ import java.net.Socket;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import static p2pfilesharing.P2PFileSharing.frame;
 
 public class FileTransferServer implements Runnable {
 
     InetAddress bcastAddress;
     int port;
     String filename;
-    public static int MAXCLI = 100;
+
+    /**
+     *
+     */
+    public static final int MAXCLI = 100;
     public static Socket[] cliSock = new Socket[MAXCLI];
     public static DataOutputStream[] sOut = new DataOutputStream[MAXCLI];
     public static Boolean[] inUse = new Boolean[MAXCLI];

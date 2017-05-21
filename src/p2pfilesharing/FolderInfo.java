@@ -7,7 +7,6 @@ package p2pfilesharing;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ public class FolderInfo {
 
     private static final String PASTA_RAIZ = "shared";
 
-    private static HashMap< String, ArrayList<FileInfo>> mapa_Servidor_Ficheiros = new HashMap<>();
+    private static final HashMap< String, ArrayList<FileInfo>> mapa_Servidor_Ficheiros = new HashMap<>();
 
     private static ArrayList<FileInfo> listaFicheiros = new ArrayList<>();
 
@@ -78,6 +77,7 @@ public class FolderInfo {
     /**
      * Adiciona os ficheiros locais a lista dos ficheiros existentes no Cluster.
      *
+     * @throws java.net.UnknownHostException
      */
     public static void addFicheirosLocais() throws UnknownHostException {
 

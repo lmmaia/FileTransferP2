@@ -5,9 +5,7 @@
  */
 package p2pfilesharing;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -26,11 +24,11 @@ import p2pfilesharing.UI.MainFrame;
  * @author Luís Maia
  */
 public class P2PFileSharing {
-    
+
     public static final int MAXCLI = 100;
     public static Boolean[] peerActive = new Boolean[MAXCLI];
     public static InetAddress[] peerAddress = new InetAddress[MAXCLI];
-    
+
     public static Semaphore changeLock = new Semaphore(1);
     static InetAddress bcastAddress;
     static DatagramSocket sock;
@@ -45,7 +43,7 @@ public class P2PFileSharing {
     static Thread udpReceiver;
     static Thread fileTransferServer;
     static Timer t;
-    
+
     public static void main(String args[]) throws Exception {
         try {
             sock = new DatagramSocket(port);
@@ -63,17 +61,26 @@ public class P2PFileSharing {
         //nick = in.readLine();
         frame = new MainFrame(nick);
         frame.setVisible(true);
-        
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                try {
+                    exit();
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(P2PFileSharing.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
         for (i = 0; i < MAXCLI; i++) {
             peerActive[i] = false;
         }
-        
+
         bcastAddress = InetAddress.getByName("255.255.255.255");
         sock.setBroadcast(true);
         data[0] = 1;
         udpPacket = new DatagramPacket(data, 1, bcastAddress, port);
         sock.send(udpPacket);
-        
+
         udpReceiver = new Thread(new UdpPeerReceive(sock));
         udpReceiver.start();
         fileTransferServer = new Thread(new FileTransferServer(bcastAddress, porto));
@@ -94,7 +101,7 @@ public class P2PFileSharing {
     }
 
     /*while (true) {*/
-    public void exit() throws IOException, InterruptedException {
+    public static void exit() throws IOException, InterruptedException {
         data[0] = 0;
         udpPacket.setData(data);
         udpPacket.setLength(1);
@@ -106,12 +113,12 @@ public class P2PFileSharing {
         }
         t.cancel();
         UdpPeerReceive.t45.cancel();
-        sock.close();
         ssock.close();
+        sock.close();
         udpReceiver.join();
         fileTransferServer.join();
     }
-    
+
     public static void list() throws InterruptedException {
         System.out.print("Active peers:");
         frame.addtoLog("Active peers:" + "\n");
@@ -119,13 +126,12 @@ public class P2PFileSharing {
         for (i = 0; i < MAXCLI; i++) {
             if (peerActive[i]) {
                 frame.addtoLog(peerAddress[i].getHostAddress() + "\n");
-                System.out.print(" " + peerAddress[i].getHostAddress()+ "\n");
+                System.out.print(" " + peerAddress[i].getHostAddress() + "\n");
             }
         }
         changeLock.release();
-        //entrada = "";
     }
-    
+
     public static void download() throws InterruptedException {
         System.out.println("entrei");//DEBUG
         //System.out.print("Select User ip:");
@@ -143,7 +149,7 @@ public class P2PFileSharing {
         }
         changeLock.release();
     }
-    
+
     public static void sendAnnouncement() throws InterruptedException, IOException {
         FolderInfo.addFicheirosLocais();
         ArrayList<FileInfo> ListaFicheiros = FolderInfo.getListaFicheiros();

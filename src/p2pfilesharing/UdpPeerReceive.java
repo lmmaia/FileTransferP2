@@ -22,12 +22,13 @@ public class UdpPeerReceive implements Runnable {
 
     public static ConcurrentHashMap< String, CopyOnWriteArrayList<FileInfo>> mapa_Servidor_Ficheiros = new ConcurrentHashMap<>();
     static Timer t45 = new Timer();
-    private DatagramSocket s;
+    private final DatagramSocket s;
     
     public UdpPeerReceive(DatagramSocket udp_s) {
         s = udp_s;
     }
 
+    @Override
     public void run() {
         int i;
         byte[] data = new byte[300];

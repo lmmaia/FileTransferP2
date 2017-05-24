@@ -95,6 +95,6 @@ public class FileInfo implements Comparable<FileInfo> {
 
     @Override
     public String toString() {
-        return P2PFileSharing.port + " | " + this.nome_Ficheiro;
+        return endereco_Servidor+ " | " + this.nome_Ficheiro;
     }
 }

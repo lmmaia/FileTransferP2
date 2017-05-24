@@ -48,7 +48,7 @@ public class FileTransferClient implements Runnable {
             }
             byte[] contents = new byte[10000];
             byte[] nameData;
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            //BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             DataOutputStream sOut = new DataOutputStream(socket.getOutputStream());
             nameData = fileName.getBytes();
             sOut.write((byte) fileName.length());

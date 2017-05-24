@@ -133,7 +133,7 @@ public class P2PFileSharing {
     }
 
     public static void download() throws InterruptedException {
-        System.out.println("entrei");//DEBUG
+        //System.out.println("entrei");//DEBUG
         //System.out.print("Select User ip:");
         changeLock.acquire();
         String ip = frame.getDwnIp();//in.readLine();
